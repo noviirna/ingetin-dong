@@ -1,5 +1,11 @@
+/**
+ * RUNTIME ENVIRONMENT VARIABLES INITIALIZATION
+ */
 require("dotenv").config();
 
+/**
+ * IMPORT RUNTIME PARAMETERS CONFIGURATION
+ */
 const {
 	PRODUCTION_ENVIRONMENT,
 	DEVELOPMENT_ENVIRONMENT,
@@ -9,59 +15,87 @@ const {
 	EXPIRE_TIME,
 	SERVER_PORT,
 	LOG_OUTPUT,
-	RUNTIME_ID
+	RUNTIME_ID,
+	REQUEST_MAX_SIZE, //
+	LOGGER_CONFIG_PROD, //
+	LOGGER_CONFIG_NONPROD //
 } = require("./appConfig").configuration;
-const { setTokenExpiration } = require("./appConfig").setter;
-const express = require("express");
-const app = express();
-const cors = require("cors");
 const PORT = process.env.PORT || SERVER_PORT;
+let databaseURL;
+let loggerConfig;
+
+/**
+ * IMPORT NPM PACKAGES & CUSTOM PACKAGES
+ */
+const { environmentChecker } = require("./helpers/otherHelpers");
+const { setTokenExpiration } = require("./appConfig").setter;
+const { NODE_ENV } = process.env;
+const { log } = console;
+const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const errorHandler = require("./helpers/errorHandler");
 const routes = require("./routes/index");
 const morgan = require("morgan");
-const { NODE_ENV } = process.env;
-let databaseURL;
 
-if (PRODUCTION_ENVIRONMENT.indexOf(NODE_ENV) > -1) {
+
+/**
+ * DATABASE, TOKEN EXPIRATION, AND LOGGER PARAMETER CONFIGURATION
+ */
+if (environmentChecker(NODE_ENV, PRODUCTION_ENVIRONMENT)) {
 	databaseURL = CLOUD_DB;
 	setTokenExpiration(EXPIRE_TIME);
-	app.use(morgan("common"));
+	loggerConfig = LOGGER_CONFIG_PROD;
 } else {
 	databaseURL = LOCAL_DB;
-	app.use(morgan("dev"));
+	loggerConfig = LOGGER_CONFIG_NONPROD;
 }
 
+
+/**
+ * BASIC SERVER RUNTIME SETUP
+ */
+const app = express();
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(morgan(loggerConfig));
+app.use(express.json({ limit: REQUEST_MAX_SIZE }));
 app.use(express.urlencoded({ extended: false }));
 app.use(routes);
 app.use(errorHandler);
 
+
+
+/**
+ * DATABASE CONNECTION CONFIGURATION
+ */
 mongoose
 	.connect(databaseURL, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
 	.then(() => {
-		console.log("Database is connected to", databaseURL);
-		console.log("\n");
+		log("Database is connected to " + databaseURL + "\n");
 	})
 	.catch((error) => {
-		console.log("Error while connecting to Database", databaseURL);
-		console.log(error);
-		console.log("\n");
+		log("Error while connecting to Database " + databaseURL + "\n");
+		log(error);
 	});
 
+
+/**
+ * SET UP RUNTIME BASED ON NODE ENVIRONMENT
+ */
 if (
-	PRODUCTION_ENVIRONMENT.indexOf(NODE_ENV) &&
-	DEVELOPMENT_ENVIRONMENT.indexOf(NODE_ENV)
+	!environmentChecker(NODE_ENV,PRODUCTION_ENVIRONMENT) &&
+	!environmentChecker(NODE_ENV,DEVELOPMENT_ENVIRONMENT)
 ) {
-	module.export = app;
+	// SETUP FOR TESTING ENVIRONMENT
+	module.export = app; 
 } else {
+	// SETUP FOR PRODUCTION OR DEVELOPMENT ENVIRONMENT
 	app.listen(PORT, () => {
-		console.log("RUNTIME ID", RUNTIME_ID);
-		console.log(
+		log("RUNTIME ID", RUNTIME_ID);
+		log(
 			APPLICATION_NAME +
 				" is running in " +
 				NODE_ENV +
@@ -71,12 +105,14 @@ if (
 	});
 }
 
+
+/**
+ * LOGGER UTIL
+ */
 const fs = require("fs");
 const util = require("util");
 const logFile = fs.createWriteStream(LOG_OUTPUT, { flags: "a" });
-
 const logStdout = process.stdout;
-
 console.log = function() {
 	logFile.write(util.format.apply(null, arguments) + "\n");
 	logStdout.write(util.format.apply(null, arguments) + "\n");
