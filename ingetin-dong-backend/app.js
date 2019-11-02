@@ -27,7 +27,8 @@ let loggerConfig;
 /**
  * IMPORT NPM PACKAGES & CUSTOM PACKAGES
  */
-const { environmentChecker, log } = require("./helpers/otherHelpers");
+const { environmentChecker } = require("./helpers/otherHelpers");
+const { log } = require("./helpers/loggerUtility");
 const { setTokenExpiration } = require("./appConfig").setter;
 const { NODE_ENV } = process.env;
 const express = require("express");
