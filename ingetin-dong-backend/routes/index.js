@@ -4,7 +4,7 @@ const tasksRoutes = require("./tasks");
 const projectsRoutes = require("./projects");
 const notification = require("./notification");
 const path = require("../constants/endpointsPath");
-const { BASE_ENDPOINTS, USER_PATH } = path;
+const { BASE_ENDPOINTS, VERSION, BASE_USER_PATH: USER_PATH } = path;
 
 router.get("/", function(request, response, next) {
 	console.log("yea");
@@ -16,6 +16,6 @@ router.get("/", function(request, response, next) {
 	});
 });
 
-router.use(BASE_ENDPOINTS + USER_PATH, userRoutes);
+router.use(BASE_ENDPOINTS + VERSION + USER_PATH , userRoutes);
 
 module.exports = router;

@@ -27,10 +27,9 @@ let loggerConfig;
 /**
  * IMPORT NPM PACKAGES & CUSTOM PACKAGES
  */
-const { environmentChecker } = require("./helpers/otherHelpers");
+const { environmentChecker, log } = require("./helpers/otherHelpers");
 const { setTokenExpiration } = require("./appConfig").setter;
 const { NODE_ENV } = process.env;
-const { log } = console;
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -74,11 +73,10 @@ mongoose
 		useUnifiedTopology: true
 	})
 	.then(() => {
-		log("Database is connected to " + databaseURL + "\n");
+		log.info("Database is successfully connected (url: " + databaseURL + ")\n");
 	})
 	.catch((error) => {
-		log("Error while connecting to Database " + databaseURL + "\n");
-		log(error);
+		log.error("Error while connecting to Database (url: " + databaseURL + ")\n", error);
 	});
 
 
@@ -94,13 +92,12 @@ if (
 } else {
 	// SETUP FOR PRODUCTION OR DEVELOPMENT ENVIRONMENT
 	app.listen(PORT, () => {
-		log("RUNTIME ID", RUNTIME_ID);
-		log(
+		log.info(
 			APPLICATION_NAME +
 				" is running in " +
 				NODE_ENV +
 				" environment on port " +
-				PORT
+				PORT + " with runtime id " + RUNTIME_ID
 		);
 	});
 }
