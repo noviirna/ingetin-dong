@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userRoutes = require("./user");
-const traceIdGenerator = require("../helpers/requestTracer");
+const processRequest = require("../helpers/requestTracer");
+const { generateSuccessResponse } = require("../helpers/apiResponseGenerator");
 const tasksRoutes = require("./tasks");
 const projectsRoutes = require("./projects");
 const notification = require("./notification");
@@ -10,35 +11,17 @@ const { log } = require("../helpers/loggerUtility");
 const { statusCode, statusMessage } = require("../constants/httpStatus");
 
 router.get("/sampleapi", function(request, response, next) {
-	const TIMESTAMP = request._startTime;
-  const IP_ADDRESS =
-		request.headers["x-forwarded-for"] || request.connection.remoteAddress;
-		
-	request.traceId = traceIdGenerator();
-	request.timestamp = TIMESTAMP;
-	request.headers.remoteAddress = IP_ADDRESS; 
-  
-  log.info("on routes / with body", request.body, request.traceId);
-  response.status(statusCode.OK).json({
-    timestamp: TIMESTAMP,
-    traceId: request.traceId,
-    apiResponse: {
-      code: statusCode.OK,
-      status: statusMessage.OK,
-			message: "The API is running!",
-			request: { headers: request.headers, body: request.body },
-    }
-  });
+  request = processRequest(request);
+  const code = statusCode.OK;
+  const status = statusMessage.OK;
+  const data = {};
+  const message = "successful";
+  const httpResponse = { code, status, message, data };
+  generateSuccessResponse(request, response, httpResponse);
 });
 
 router.get("/sampleapi/error", function(request, response, next) {
-  request.traceId = traceIdGenerator();
-  request.timestamp = request._startTime;
-  const USER_AGENT = request.headers["user-agent"];
-  const TIMESTAMP = request._startTime;
-  const IP_ADDRESS =
-    request.headers["x-forwarded-for"] || request.connection.remoteAddress;
-  log.info("on routes / with body", request.body, request.traceId);
+  request = processRequest(request);
   request.name = "Error";
   request.message = "Sample error Bad Request";
   next(request);
