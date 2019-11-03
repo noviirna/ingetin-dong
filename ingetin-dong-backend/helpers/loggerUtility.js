@@ -1,40 +1,26 @@
-const { RUNTIME_ID } = require("../appConfig").configuration;
+
 function generateLogTemplate(typeOfTemplate, traceId) {
-  let template;
+  const runtimeId = require("../appConfig").configuration.RUNTIME_ID;
+  const environment = process.env.NODE_ENV;
+  const timestamp = new Date().toISOString();
+  let messageType;
 
   if (traceId == undefined) {
-    traceId = "";
+    traceId = "\n";
   } else {
-    traceId = traceId + " - ";
+    traceId = " [traceId: " + traceId + "]\n";
   }
 
   switch (typeOfTemplate.toLowerCase()) {
     case "info":
-      template =
-        "\n[ INFO ] - " +
-        RUNTIME_ID +
-        " - " +
-        traceId +
-        process.env.NODE_ENV +
-        " - " +
-        new Date().toTimeString() +
-        "\n";
+      messageType = "INFO";
       break;
     case "error":
-      template =
-        "\n[ ERROR ] - " +
-        RUNTIME_ID +
-        " - " +
-        traceId +
-        process.env.NODE_ENV +
-        " - " +
-        new Date().toTimeString() +
-        "\n";
+      messageType = "ERROR";        
       break;
   }
-  return template;
+  return `\n[ ${messageType} ] [runtimeId: ${runtimeId}] [environment: ${environment}] [timestamp: ${timestamp}]` + traceId ;
 }
-
 
 module.exports = {
   /**
