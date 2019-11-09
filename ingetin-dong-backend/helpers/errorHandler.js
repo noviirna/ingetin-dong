@@ -2,24 +2,24 @@ const errorMessageGenerator = require("./errorMessageGenerator.js");
 const { checkIfWordExist } = require("./otherHelpers");
 const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { generateErrorResponse } = require("./apiResponseGenerator");
+const { errorName, errorResponse } = require("../constants/exception");
 
 function processTheError(error) {
-  let code, status;
-  if (checkIfWordExist(error.name, "ValidationError", false)) {
-    code = statusCode.BAD_REQUEST;
-    status = statusMessage.BAD_REQUEST;
-  } else if (checkIfWordExist(error.name, "TokenExpiredError", false)) {
-    code = statusCode.UNAUTHORIZED;
-    status = statusMessage.UNAUTHORIZED;
+  let response;
+  if (checkIfWordExist(error.name, errorName.VALIDATION_ERROR, false)) {
+    response = errorResponse.VALIDATION_ERROR;
+  } else if (checkIfWordExist(error.name, errorName.TOKEN_EXPIRED, false)) {
+    response = errorResponse.TOKEN_EXPIRED;
+  } else if (
+    checkIfWordExist(error.name, errorName.USERNAME_PASSWORD_WRONG, false)
+  ) {
+    response = errorResponse.USERNAME_PASSWORD_WRONG;
   } else {
-    code = statusCode.INTERNAL_SERVER_ERROR;
-    status = statusMessage.INTERNAL_SERVER_ERROR;
+    response = errorResponse.GENERAL_ERROR;
   }
-  const message = errorMessageGenerator(error.message);
   return {
-    code,
-    status,
-    message
+    ...response,
+    message: errorMessageGenerator(error.message)
   };
 }
 

@@ -20,7 +20,7 @@ const {
   resetSecureWord,
   update,
   viewProfile
-} = require("../controllers/userController");
+} = require("../controllers/UserController");
 
 router.post(USER_LOGIN, login);
 router.post(USER_REGISTER, register);

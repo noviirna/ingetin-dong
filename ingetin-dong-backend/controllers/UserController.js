@@ -1,17 +1,20 @@
-// const User = require("../models/user");
 const processRequest = require("../helpers/requestTracer");
-const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { generateSuccessResponse } = require("../helpers/apiResponseGenerator");
+const UserManagement = require("../services/UserManagement");
 
 class UserController {
   static login(request, response, next) {
     request = processRequest(request);
-    const code = statusCode.OK;
-    const status = statusMessage.OK;
-    const data = {};
-    const message = "login";
-    const httpResponse = { code, status, message, data };
-    generateSuccessResponse(request, response, httpResponse);
+    UserManagement.login(request.body)
+      .then(loginResponse => {
+        const message = "login";
+        const { code, status, data } = loginResponse;
+        const httpResponse = { code, status, message, data };
+        generateSuccessResponse(request, response, httpResponse);
+      })
+      .catch(err => {
+        next(err);
+      });
   }
   static register(request, response, next) {
     request = processRequest(request);
