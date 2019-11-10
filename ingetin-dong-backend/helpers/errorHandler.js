@@ -1,5 +1,4 @@
 const errorMessageGenerator = require("./errorMessageGenerator.js");
-const { checkIfWordExist } = require("./otherHelpers");
 const { generateErrorResponse } = require("./apiResponseGenerator");
 const { errorName, errorResponse } = require("../constants/exception");
 

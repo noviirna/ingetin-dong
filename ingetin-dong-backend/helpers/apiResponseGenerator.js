@@ -6,16 +6,16 @@ module.exports = {
    * @param {Object} processedResponse, consist of {code: int of httpStatus code i.e. 200, status: String of httpStatus i.e. 'Created', message: String of message i.e. 'Success login', data: any }
    */
   generateSuccessResponse(request, response, processedResponse) {
-    const { timestamp, traceId, headers, body } = request;
+    const { timestamp, traceId } = request;
     const { code, status, message, data } = processedResponse;
     response.status(code).json({
-      timestamp: new Date().toISOString(),
+      timestamp,
       traceId,
-      apiResponse: {
+      apiSuccessResponse: {
+        timestamp: new Date().toISOString(),
         code,
         status,
         message,
-        request: { timestamp, headers, body },
         data
       }
     });
@@ -27,16 +27,16 @@ module.exports = {
    * @param {Object} processedResponse, consist of {code: int of httpStatus code i.e. 200, status: String of httpStatus i.e. 'Created', message: String of message i.e. 'Success login', data: any }
    */
   generateErrorResponse(request, response, processedResponse) {
-    const { timestamp, traceId, headers, body } = request;
+    const { timestamp, traceId } = request;
     const { code, status, message } = processedResponse;
     response.status(code).json({
-      timestamp: new Date().toISOString(),
+      timestamp,
       traceId,
-      apiError: {
+      apiErrorResponse: {
+        timestamp: new Date().toISOString(),
         code,
         status,
-        message,
-        request: { timestamp, headers, body }
+        message
       }
     });
   }

@@ -9,7 +9,6 @@ class UserController {
       .then(() => {
         UserManagement.login(request.body)
           .then(loginResponse => {
-            request.body.password = null;
             response.set("access_token", loginResponse.data.access_token);
             const { code, status, message } = loginResponse;
             generateSuccessResponse(request, response, {
@@ -26,7 +25,6 @@ class UserController {
     request = processRequest(request);
     UserManagement.register(request.body)
       .then(registerResponse => {
-        request.body.password = null;
         generateSuccessResponse(request, response, registerResponse);
       })
       .catch(err => {
