@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
-const { TOKEN_EXPIRATION } = require("./appConfig");
+const { TOKEN_EXPIRATION } = require("../appConfig");
 module.exports = {
 	/**
 	 * This method is used to convert payload to jwt token
@@ -12,7 +12,7 @@ module.exports = {
 		const token = jwt.sign(
 			{
 				data: payload,
-				exp: TOKEN_EXPIRATION
+				// exp: TOKEN_EXPIRATION
 			},
 			JWT_SECRET
 		);

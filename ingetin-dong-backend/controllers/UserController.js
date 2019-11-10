@@ -7,10 +7,10 @@ class UserController {
     request = processRequest(request);
     UserManagement.login(request.body)
       .then(loginResponse => {
-        const message = "login";
-        const { code, status, data } = loginResponse;
-        const httpResponse = { code, status, message, data };
-        generateSuccessResponse(request, response, httpResponse);
+        request.body.password = null;
+        response.set("access_token", loginResponse.data.access_token);
+        const { code, status, message } = loginResponse;
+        generateSuccessResponse(request, response, { code, status, message });
       })
       .catch(err => {
         next(err);
@@ -18,12 +18,14 @@ class UserController {
   }
   static register(request, response, next) {
     request = processRequest(request);
-    const code = statusCode.CREATED;
-    const status = statusMessage.CREATED;
-    const data = {};
-    const message = "register";
-    const httpResponse = { code, status, message, data };
-    generateSuccessResponse(request, response, httpResponse);
+    UserManagement.register(request.body)
+      .then(registerResponse => {
+        request.body.password = null;
+        generateSuccessResponse(request, response, registerResponse);
+      })
+      .catch(err => {
+        next(err);
+      });
   }
   static activate(request, response, next) {
     request = processRequest(request);
