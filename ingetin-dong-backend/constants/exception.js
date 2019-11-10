@@ -4,7 +4,8 @@ module.exports = {
     USER_NOT_EXIST: "UserIsNotExist",
     USERNAME_PASSWORD_WRONG: "UsernameOrPasswordWrong",
     TOKEN_EXPIRED: "TokenExpiredError",
-    VALIDATION_ERROR: "ValidationError"
+    VALIDATION_ERROR: "ValidationError",
+    USER_ALREADY_LOGIN: "UserAlreadyLogin"
   },
   errorResponse: {
     USER_NOT_EXIST: {
@@ -13,11 +14,18 @@ module.exports = {
     },
     USERNAME_PASSWORD_WRONG: {
       code: statusCode.BAD_REQUEST,
-      status: statusMessage.BAD_REQUEST
+      status: statusMessage.BAD_REQUEST,
+      message: "You are entering wrong username / password. Please Try Again."
+    },
+    USER_ALREADY_LOGIN: {
+      code: statusCode.BAD_REQUEST,
+      status: statusMessage.BAD_REQUEST,
+      message: "User already logged in."
     },
     TOKEN_EXPIRED: {
       code: statusCode.UNAUTHORIZED,
-      status: statusMessage.UNAUTHORIZED
+      status: statusMessage.UNAUTHORIZED,
+      message: "Your access token is invalid."
     },
     VALIDATION_ERROR: {
       code: statusCode.BAD_REQUEST,
@@ -30,6 +38,7 @@ module.exports = {
   },
   errorMessage: {
     USERNAME_PASSWORD_WRONG:
-      "You are entering wrong username / password. Please Try Again."
+      "You are entering wrong username / password. Please Try Again.",
+    USER_ALREADY_LOGIN: "User already logged in."
   }
 };

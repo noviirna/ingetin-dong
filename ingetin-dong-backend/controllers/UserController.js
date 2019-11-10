@@ -1,20 +1,26 @@
 const processRequest = require("../helpers/requestTracer");
 const { generateSuccessResponse } = require("../helpers/apiResponseGenerator");
 const UserManagement = require("../services/UserManagement");
-
+const { log } = require("../helpers/loggerUtility");
 class UserController {
   static login(request, response, next) {
     request = processRequest(request);
-    UserManagement.login(request.body)
-      .then(loginResponse => {
-        request.body.password = null;
-        response.set("access_token", loginResponse.data.access_token);
-        const { code, status, message } = loginResponse;
-        generateSuccessResponse(request, response, { code, status, message });
+    UserManagement.checkSession(request.body)
+      .then(() => {
+        UserManagement.login(request.body)
+          .then(loginResponse => {
+            request.body.password = null;
+            response.set("access_token", loginResponse.data.access_token);
+            const { code, status, message } = loginResponse;
+            generateSuccessResponse(request, response, {
+              code,
+              status,
+              message
+            });
+          })
+          .catch(next);
       })
-      .catch(err => {
-        next(err);
-      });
+      .catch(next);
   }
   static register(request, response, next) {
     request = processRequest(request);

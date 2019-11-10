@@ -79,7 +79,8 @@ const UserSchema = new Schema({
       }
     ],
     required: true
-  }
+  },
+  lastLogin: Number
 });
 
 UserSchema.pre("save", function(next) {

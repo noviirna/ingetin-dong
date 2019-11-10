@@ -6,11 +6,13 @@ const unusedErrorWords = require("../constants/unusedErrorWords");
  * @returns {String} finalMessage
  */
 module.exports = function(rawMessage) {
-	let finalMessage = rawMessage;
-	for (let index = 0; index < unusedErrorWords.length; index++) {
-		if (unusedErrorWords[index].indexOf(finalMessage)) {
-			finalMessage = finalMessage.replace(unusedErrorWords[index], "");
-		}
-	}
-	return finalMessage;
+  let finalMessage = rawMessage;
+  console.log(finalMessage);
+  console.log(unusedErrorWords);
+  for (let index = 0; index < unusedErrorWords.length; index++) {
+    if (unusedErrorWords[index].indexOf(finalMessage) > -1) {
+      finalMessage = finalMessage.replace(unusedErrorWords[index], "");
+    }
+  }
+  return finalMessage;
 };

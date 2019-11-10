@@ -1,11 +1,11 @@
 const errorMessageGenerator = require("./errorMessageGenerator.js");
 const { checkIfWordExist } = require("./otherHelpers");
-const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { generateErrorResponse } = require("./apiResponseGenerator");
 const { errorName, errorResponse } = require("../constants/exception");
 
 function processTheError(error) {
   let response;
+  console.log(error);
   if (checkIfWordExist(error.name, errorName.VALIDATION_ERROR, false)) {
     response = errorResponse.VALIDATION_ERROR;
   } else if (checkIfWordExist(error.name, errorName.TOKEN_EXPIRED, false)) {
@@ -14,12 +14,17 @@ function processTheError(error) {
     checkIfWordExist(error.name, errorName.USERNAME_PASSWORD_WRONG, false)
   ) {
     response = errorResponse.USERNAME_PASSWORD_WRONG;
+  } else if (
+    checkIfWordExist(error.name, errorName.USER_ALREADY_LOGIN, false)
+  ) {
+    response = errorResponse.USER_ALREADY_LOGIN;
   } else {
     response = errorResponse.GENERAL_ERROR;
   }
+  console.log(response);
   return {
     ...response,
-    message: errorMessageGenerator(error.message)
+    message: errorMessageGenerator(response.message || error.message)
   };
 }
 
