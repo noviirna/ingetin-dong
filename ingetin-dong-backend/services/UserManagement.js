@@ -17,8 +17,7 @@ class UserManagementService {
             } else {
               if (foundUserByEmail.lastLogin + 600000 > new Date().getTime()) {
                 reject({
-                  name: exception.errorName.USER_ALREADY_LOGIN,
-                  message: exception.errorMessage.USER_ALREADY_LOGIN
+                  name: exception.errorName.USER_ALREADY_LOGIN
                 });
               } else {
                 resolve();
@@ -36,8 +35,7 @@ class UserManagementService {
                   ) {
                     console.log("session check reject");
                     reject({
-                      name: exception.errorName.USER_ALREADY_LOGIN,
-                      message: exception.errorMessage.USER_ALREADY_LOGIN
+                      name: exception.errorName.USER_ALREADY_LOGIN
                     });
                   } else {
                     resolve();
@@ -45,8 +43,7 @@ class UserManagementService {
                 }
               } else {
                 reject({
-                  name: exception.errorName.USERNAME_PASSWORD_WRONG,
-                  message: exception.errorMessage.USERNAME_PASSWORD_WRONG
+                  name: exception.errorName.USERNAME_PASSWORD_WRONG
                 });
               }
             });
@@ -88,8 +85,7 @@ class UserManagementService {
                 .catch(reject);
             } else {
               reject({
-                name: exception.errorName.USERNAME_PASSWORD_WRONG,
-                message: exception.errorMessage.USERNAME_PASSWORD_WRONG
+                name: exception.errorName.USERNAME_PASSWORD_WRONG
               });
             }
           } else {
@@ -115,8 +111,7 @@ class UserManagementService {
                     .catch(reject);
                 } else {
                   reject({
-                    name: exception.errorName.USERNAME_PASSWORD_WRONG,
-                    message: exception.errorMessage.USERNAME_PASSWORD_WRONG
+                    name: exception.errorName.USERNAME_PASSWORD_WRONG
                   });
                 }
               } else {

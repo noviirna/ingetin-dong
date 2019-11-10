@@ -5,23 +5,23 @@ const { errorName, errorResponse } = require("../constants/exception");
 
 function processTheError(error) {
   let response;
-  console.log(error);
-  if (checkIfWordExist(error.name, errorName.VALIDATION_ERROR, false)) {
-    response = errorResponse.VALIDATION_ERROR;
-  } else if (checkIfWordExist(error.name, errorName.TOKEN_EXPIRED, false)) {
-    response = errorResponse.TOKEN_EXPIRED;
-  } else if (
-    checkIfWordExist(error.name, errorName.USERNAME_PASSWORD_WRONG, false)
-  ) {
-    response = errorResponse.USERNAME_PASSWORD_WRONG;
-  } else if (
-    checkIfWordExist(error.name, errorName.USER_ALREADY_LOGIN, false)
-  ) {
-    response = errorResponse.USER_ALREADY_LOGIN;
-  } else {
-    response = errorResponse.GENERAL_ERROR;
+  switch (error.name) {
+    case errorName.VALIDATION_ERROR:
+      response = errorResponse.VALIDATION_ERROR;
+      break;
+    case errorName.TOKEN_EXPIRED:
+      response = errorResponse.TOKEN_EXPIRED;
+      break;
+    case errorName.USERNAME_PASSWORD_WRONG:
+      response = errorResponse.USERNAME_PASSWORD_WRONG;
+      break;
+    case errorName.USER_ALREADY_LOGIN:
+      response = errorResponse.USER_ALREADY_LOGIN;
+      break;
+    default:
+      response = errorResponse.GENERAL_ERROR;
   }
-  console.log(response);
+
   return {
     ...response,
     message: errorMessageGenerator(response.message || error.message)

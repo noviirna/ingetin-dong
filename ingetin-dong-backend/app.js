@@ -47,6 +47,7 @@ if (environmentChecker(NODE_ENV, PRODUCTION_ENVIRONMENT)) {
   loggerConfig = LOGGER_CONFIG_PROD;
 } else {
   databaseURL = LOCAL_DB;
+  setTokenExpiration(EXPIRE_TIME);
   loggerConfig = LOGGER_CONFIG_NONPROD;
 }
 

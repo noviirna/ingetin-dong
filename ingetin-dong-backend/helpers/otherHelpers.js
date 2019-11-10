@@ -1,12 +1,13 @@
 function checkIfWordExist(shortString, longString, isCaseSensitive) {
   let value = longString.indexOf(shortString) > -1;
+
   if (
     !isCaseSensitive ||
     isCaseSensitive === "false" ||
     isCaseSensitive === 0
   ) {
-    let longStringLowerCase = String.prototype.toLowerCase(longString);
-    let shortStringLowerCase = String.prototype.toLowerCase(shortString);
+    let longStringLowerCase = String(longString).toLowerCase();
+    let shortStringLowerCase = String(shortString).toLowerCase();
     value = longStringLowerCase.indexOf(shortStringLowerCase) > -1;
   }
   return value;
@@ -28,6 +29,6 @@ module.exports = {
    * @returns Boolean value, will return true if runningEnvironment is same as targetEnvironment
    */
   environmentChecker(runningEnvironment, targetEnvironment) {
-    return checkIfWordExist(runningEnvironment, targetEnvironment, false);
+    return targetEnvironment.indexOf(runningEnvironment) > -1;
   }
 };
