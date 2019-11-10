@@ -43,11 +43,9 @@ const morgan = require("morgan");
  */
 if (environmentChecker(NODE_ENV, PRODUCTION_ENVIRONMENT)) {
   databaseURL = CLOUD_DB;
-  setTokenExpiration(EXPIRE_TIME);
   loggerConfig = LOGGER_CONFIG_PROD;
 } else {
   databaseURL = LOCAL_DB;
-  setTokenExpiration(EXPIRE_TIME);
   loggerConfig = LOGGER_CONFIG_NONPROD;
 }
 

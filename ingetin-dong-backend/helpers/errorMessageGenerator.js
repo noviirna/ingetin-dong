@@ -7,8 +7,6 @@ const unusedErrorWords = require("../constants/unusedErrorWords");
  */
 module.exports = function(rawMessage) {
   let finalMessage = rawMessage;
-  console.log(finalMessage);
-  console.log(unusedErrorWords);
   for (let index = 0; index < unusedErrorWords.length; index++) {
     if (unusedErrorWords[index].indexOf(finalMessage) > -1) {
       finalMessage = finalMessage.replace(unusedErrorWords[index], "");

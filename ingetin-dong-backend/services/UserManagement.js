@@ -3,9 +3,14 @@ const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { compareHash } = require("../helpers/objectHashing");
 const { encode } = require("../helpers/tokenization");
 const exception = require("../constants/exception");
+const { TOKEN_EXPIRATION } = require("../appConfig").configuration;
 
 class UserManagementService {
   static checkSession(loginData) {
+    let expirationTime = 600000; // default 10 minute
+    // todo : logic for dynamic session time based on parameters in appConfig file
+    if (TOKEN_EXPIRATION == "10m") {
+    }
     const email = loginData.email;
     const username = loginData.username;
     return new Promise((resolve, reject) => {
@@ -15,7 +20,10 @@ class UserManagementService {
             if (foundUserByEmail.lastLogin == null) {
               resolve();
             } else {
-              if (foundUserByEmail.lastLogin + 600000 > new Date().getTime()) {
+              if (
+                foundUserByEmail.lastLogin + expirationTime >
+                new Date().getTime()
+              ) {
                 reject({
                   name: exception.errorName.USER_ALREADY_LOGIN
                 });
@@ -30,7 +38,7 @@ class UserManagementService {
                   resolve();
                 } else {
                   if (
-                    foundUserByUsername.lastLogin + 600000 >
+                    foundUserByUsername.lastLogin + expirationTime >
                     new Date().getTime()
                   ) {
                     console.log("session check reject");
