@@ -3,6 +3,7 @@ const { generateErrorResponse } = require("./apiResponseGenerator");
 const { errorName, errorResponse } = require("../constants/exception");
 
 function processTheError(error) {
+  console.log(error)
   let response;
   switch (error.name) {
     case errorName.VALIDATION_ERROR:

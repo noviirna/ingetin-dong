@@ -1,7 +1,7 @@
 const processRequest = require("../helpers/requestTracer");
 const { generateSuccessResponse } = require("../helpers/apiResponseGenerator");
 const UserManagement = require("../services/UserManagement");
-const { log } = require("../helpers/loggerUtility");
+const { log } = require("../helpers/logger");
 class UserController {
   static login(request, response, next) {
     request = processRequest(request);

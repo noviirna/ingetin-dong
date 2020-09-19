@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { hashObject } = require("../helpers/objectHashing");
+const { hashObject } = require("../util/hashingUtil");
 const emailValidationRegEx = /^(([^<>()\[\]\.,;:\s@"]+(\.[^<>()\[\]\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const usernameValidaitonRegEx = /^(?!.*__.*)(?!.*\.\..*)[a-z0-9_.]+$/iu;
 const UserModel = "User";

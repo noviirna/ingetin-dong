@@ -4,11 +4,26 @@
 require("dotenv").config();
 
 /**
+ * IMPORT NPM PACKAGES & CUSTOM PACKAGES
+ */
+const {
+  isRunningOnProduction,
+  isRunningOnTest
+} = require("./helpers/environmentHelpers");
+const { log } = require("./helpers/logger");
+const { setTokenExpiration } = require("./appConfig").setter;
+const { NODE_ENV } = process.env;
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const errorHandler = require("./helpers/errorHandler");
+const routes = require("./routes/index");
+const morgan = require("morgan");
+
+/**
  * IMPORT RUNTIME PARAMETERS CONFIGURATION
  */
 const {
-  PRODUCTION_ENVIRONMENT,
-  DEVELOPMENT_ENVIRONMENT,
   LOCAL_DB,
   CLOUD_DB,
   APPLICATION_NAME,
@@ -25,28 +40,15 @@ let databaseURL;
 let loggerConfig;
 
 /**
- * IMPORT NPM PACKAGES & CUSTOM PACKAGES
- */
-const { environmentChecker } = require("./helpers/otherHelpers");
-const { log } = require("./helpers/loggerUtility");
-const { setTokenExpiration } = require("./appConfig").setter;
-const { NODE_ENV } = process.env;
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const errorHandler = require("./helpers/errorHandler");
-const routes = require("./routes/index");
-const morgan = require("morgan");
-
-/**
  * DATABASE, TOKEN EXPIRATION, AND LOGGER PARAMETER CONFIGURATION
  */
-if (environmentChecker(NODE_ENV, PRODUCTION_ENVIRONMENT)) {
+if (isRunningOnProduction(NODE_ENV)) {
   databaseURL = CLOUD_DB;
   loggerConfig = LOGGER_CONFIG_PROD;
 } else {
   databaseURL = LOCAL_DB;
   loggerConfig = LOGGER_CONFIG_NONPROD;
+  console.log(databaseURL);
 }
 
 /**
@@ -72,21 +74,20 @@ mongoose
     log.info("Database is successfully connected (url: " + databaseURL + ")\n");
   })
   .catch(error => {
-    log.error(
-      "Error while connecting to Database (url: " + databaseURL + ")\n",
-      error
-    );
+    if (NODE_ENV !== "test") {
+      log.error(
+        "Error while connecting to Database (url: " + databaseURL + ")\n",
+        error
+      );
+    }
   });
 
 /**
  * SET UP RUNTIME BASED ON NODE ENVIRONMENT
  */
-if (
-  !environmentChecker(NODE_ENV, PRODUCTION_ENVIRONMENT) &&
-  !environmentChecker(NODE_ENV, DEVELOPMENT_ENVIRONMENT)
-) {
+if (isRunningOnTest(NODE_ENV)) {
   // SETUP FOR TESTING ENVIRONMENT
-  module.export = app;
+  module.exports = app;
 } else {
   // SETUP FOR PRODUCTION OR DEVELOPMENT ENVIRONMENT
   app.listen(PORT, () => {

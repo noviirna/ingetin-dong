@@ -1,3 +1,5 @@
+const { log } = require("./logger");
+
 module.exports = {
   /**
    * This method generate standard api response
@@ -8,7 +10,7 @@ module.exports = {
   generateSuccessResponse(request, response, processedResponse) {
     const { timestamp, traceId } = request;
     const { code, status, message, data } = processedResponse;
-    response.status(code).json({
+    var body = {
       timestamp,
       traceId,
       apiSuccessResponse: {
@@ -16,9 +18,11 @@ module.exports = {
         code,
         status,
         message,
-        data
+        ...data
       }
-    });
+    };
+    log.info("Response:", body, traceId);
+    response.status(code).json(body);
   },
   /**
    * This method generate standard api error response

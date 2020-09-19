@@ -6,7 +6,7 @@ const tasksRoutes = require("./tasks");
 const projectsRoutes = require("./projects");
 const notification = require("./notification");
 const path = require("../constants/endpointsPath");
-const { BASE_ENDPOINTS, VERSION, BASE_USER_PATH } = path;
+const { BASE_ENDPOINTS, APP_VERSION, BASE_USER_PATH } = path;
 const { statusCode, statusMessage } = require("../constants/httpStatus");
 
 router.get("/sampleapi", function(request, response, next) {
@@ -26,6 +26,6 @@ router.get("/sampleapi/error", function(request, response, next) {
   next(request);
 });
 
-router.use(BASE_ENDPOINTS + VERSION + BASE_USER_PATH, userRoutes);
+router.use(BASE_ENDPOINTS + APP_VERSION + BASE_USER_PATH, userRoutes);
 
 module.exports = router;

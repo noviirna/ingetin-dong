@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const { statusCode, statusMessage } = require("../constants/httpStatus");
-const { compareHash } = require("../helpers/objectHashing");
-const { encode } = require("../helpers/tokenization");
+const { compareHash, hashObject } = require("../util/hashingUtil");
+const { encode } = require("../util/jwtUtil");
 const exception = require("../constants/exception");
 const { TOKEN_EXPIRATION } = require("../appConfig").configuration;
 
@@ -137,7 +137,7 @@ class UserManagementService {
 
   static register(registerData) {
     const email = registerData.email;
-    const password = registerData.password;
+    const password = hashObject(registerData.password);
     const username = registerData.username;
 
     return new Promise((resolve, reject) => {
@@ -146,11 +146,16 @@ class UserManagementService {
           resolve({
             code: statusCode.CREATED,
             status: statusMessage.CREATED,
-            message: "Success creating user " + createdUser.username,
+            message:
+              "Welcome " +
+              username +
+              "! Login with your email and password to proceed!",
             data: {
-              userId: createdUser._id,
-              username: createdUser.username,
-              email: createdUser.email
+              registrationResponse: {
+                userId: createdUser._id,
+                username: createdUser.username,
+                email: createdUser.email
+              }
             }
           });
         })

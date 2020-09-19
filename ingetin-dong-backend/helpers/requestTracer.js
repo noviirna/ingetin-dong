@@ -1,4 +1,4 @@
-const { log } = require("./loggerUtility");
+const { log } = require("./logger");
 module.exports = function(request) {
   let generatedId = "";
   let characterList =
