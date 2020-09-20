@@ -8,7 +8,7 @@ require("dotenv").config();
  */
 const {
   isRunningOnProduction,
-  isRunningOnTest
+  isRunningOnTest,
 } = require("./helpers/environmentHelpers");
 const { log } = require("./helpers/logger");
 const { setTokenExpiration } = require("./appConfig").setter;
@@ -33,7 +33,7 @@ const {
   RUNTIME_ID,
   REQUEST_MAX_SIZE, //
   LOGGER_CONFIG_PROD, //
-  LOGGER_CONFIG_NONPROD //
+  LOGGER_CONFIG_NONPROD, //
 } = require("./appConfig").configuration;
 const PORT = process.env.PORT || SERVER_PORT;
 let databaseURL;
@@ -48,7 +48,6 @@ if (isRunningOnProduction(NODE_ENV)) {
 } else {
   databaseURL = LOCAL_DB;
   loggerConfig = LOGGER_CONFIG_NONPROD;
-  console.log(databaseURL);
 }
 
 /**
@@ -68,12 +67,12 @@ app.use(errorHandler);
 mongoose
   .connect(databaseURL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
   .then(() => {
     log.info("Database is successfully connected (url: " + databaseURL + ")\n");
   })
-  .catch(error => {
+  .catch((error) => {
     if (NODE_ENV !== "test") {
       log.error(
         "Error while connecting to Database (url: " + databaseURL + ")\n",
@@ -110,7 +109,7 @@ const fs = require("fs");
 const util = require("util");
 const logFile = fs.createWriteStream(LOG_OUTPUT, { flags: "a" });
 const logStdout = process.stdout;
-console.log = function() {
+console.log = function () {
   logFile.write(util.format.apply(null, arguments) + "\n");
   logStdout.write(util.format.apply(null, arguments) + "\n");
 };

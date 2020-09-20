@@ -33,13 +33,13 @@ class UserManagementService {
         password: decryptedPassword,
         username: registrationRequest.username,
         status: USER_STATUS.NOTACTIVATED.value,
-        lastLogin: null
+        lastLogin: null,
       })
-        .then(createdUser => {
+        .then((createdUser) => {
           log.info("Success create user ", createdUser._id, traceId);
           resolve({ ...createdUser });
         })
-        .catch(error => {
+        .catch((error) => {
           log.error(
             "Exception happen in UserManagementService.addUser",
             error,
@@ -53,10 +53,10 @@ class UserManagementService {
   static findById(userId) {
     return new Promise((resolve, reject) => {
       User.findById(userId)
-        .then(found => {
+        .then((found) => {
           resolve(found);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -65,10 +65,10 @@ class UserManagementService {
   static findByEmail(email) {
     return new Promise((resolve, reject) => {
       User.findOne({ email })
-        .then(found => {
+        .then((found) => {
           resolve(found);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -77,10 +77,10 @@ class UserManagementService {
   static findByUsername(username) {
     return new Promise((resolve, reject) => {
       User.findOne({ username })
-        .then(found => {
+        .then((found) => {
           resolve(found);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });

@@ -3,11 +3,11 @@ const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { compareHash, hashObject } = require("../util/hashingUtil");
 const { encode } = require("../util/jwtUtil");
 const { log } = require("../helpers/logger");
-const { encryptAES } = require("../util/encryptionUtil");
-const { uuidv4 } = require("../util/generatorUtil");
 const exception = require("../constants/exception");
 const { TOKEN_EXPIRATION } = require("../appConfig").configuration;
-const UserManagementService = require("./UserManagement");
+const UserManagementService = require("./UserManagementService");
+const OtpService = require("./OtpService");
+const { registrationCache } = require("./CacheService");
 
 class RegistrationService {
   static checkSession(loginData) {
@@ -19,7 +19,7 @@ class RegistrationService {
     const username = loginData.username;
     return new Promise((resolve, reject) => {
       User.findOne({ email })
-        .then(foundUserByEmail => {
+        .then((foundUserByEmail) => {
           if (foundUserByEmail) {
             if (foundUserByEmail.lastLogin == null) {
               resolve();
@@ -29,14 +29,14 @@ class RegistrationService {
                 new Date().getTime()
               ) {
                 reject({
-                  name: exception.errorName.USER_ALREADY_LOGIN
+                  name: exception.errorName.USER_ALREADY_LOGIN,
                 });
               } else {
                 resolve();
               }
             }
           } else {
-            User.findOne({ username }).then(foundUserByUsername => {
+            User.findOne({ username }).then((foundUserByUsername) => {
               if (foundUserByUsername) {
                 if (foundUserByUsername.lastLogin == null) {
                   resolve();
@@ -47,7 +47,7 @@ class RegistrationService {
                   ) {
                     console.log("session check reject");
                     reject({
-                      name: exception.errorName.USER_ALREADY_LOGIN
+                      name: exception.errorName.USER_ALREADY_LOGIN,
                     });
                   } else {
                     resolve();
@@ -55,13 +55,13 @@ class RegistrationService {
                 }
               } else {
                 reject({
-                  name: exception.errorName.USERNAME_PASSWORD_WRONG
+                  name: exception.errorName.USERNAME_PASSWORD_WRONG,
                 });
               }
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -74,7 +74,7 @@ class RegistrationService {
 
     return new Promise((resolve, reject) => {
       User.findOne({ email })
-        .then(foundUserByEmail => {
+        .then((foundUserByEmail) => {
           if (foundUserByEmail) {
             const hashedPassword = foundUserByEmail.password;
             console.log(hashedPassword + " " + foundUserByEmail);
@@ -83,7 +83,7 @@ class RegistrationService {
               User.findOneAndUpdate(
                 { email },
                 {
-                  lastLogin: new Date().getTime()
+                  lastLogin: new Date().getTime(),
                 }
               )
                 .then(() => {
@@ -91,17 +91,17 @@ class RegistrationService {
                     code: statusCode.OK,
                     status: statusMessage.OK,
                     message: "Login succesful with email " + email,
-                    data: { access_token: encode(foundUserByEmail) }
+                    data: { access_token: encode(foundUserByEmail) },
                   });
                 })
                 .catch(reject);
             } else {
               reject({
-                name: exception.errorName.USERNAME_PASSWORD_WRONG
+                name: exception.errorName.USERNAME_PASSWORD_WRONG,
               });
             }
           } else {
-            User.findOne({ username }).then(foundUserByUsername => {
+            User.findOne({ username }).then((foundUserByUsername) => {
               if (foundUserByUsername) {
                 const hashedPassword = foundUserByUsername.password;
                 const isPasswordRight = compareHash(password, hashedPassword);
@@ -109,7 +109,7 @@ class RegistrationService {
                   User.findOneAndUpdate(
                     { username },
                     {
-                      lastLogin: new Date().getTime()
+                      lastLogin: new Date().getTime(),
                     }
                   )
                     .then(() => {
@@ -117,19 +117,19 @@ class RegistrationService {
                         code: statusCode.OK,
                         status: statusMessage.OK,
                         message: "Login succesful with username " + username,
-                        data: { access_token: encode(foundUserByUsername) }
+                        data: { access_token: encode(foundUserByUsername) },
                       });
                     })
                     .catch(reject);
                 } else {
                   reject({
-                    name: exception.errorName.USERNAME_PASSWORD_WRONG
+                    name: exception.errorName.USERNAME_PASSWORD_WRONG,
                   });
                 }
               } else {
                 reject({
                   name: exception.errorName.USERNAME_PASSWORD_WRONG,
-                  message: exception.errorMessage.USERNAME_PASSWORD_WRONG
+                  message: exception.errorMessage.USERNAME_PASSWORD_WRONG,
                 });
               }
             });
@@ -154,19 +154,19 @@ class RegistrationService {
 
         // generate activation code
         let userId = createdUser._id;
-        let otp = hashObject(uuidv4);
 
-        let otpId = encode(otp);
+        let otpRequest = { userId, traceId };
+        let otpResponse = OtpService.generateOtp(otpRequest);
+        let { otpTimestamp, otpId, otpHash } = otpResponse;
 
         var token = encode({
           userId,
           otpId,
-          otpTimestamp: new Date().getTime()
         });
 
-        // send email for activation code
+        registrationCache.set(otpId.concat(userId), otpHash, 10 * 60);
 
-        // generate jwt for activation code
+        // send email for activation code
 
         // generate response
         resolve({
@@ -178,12 +178,11 @@ class RegistrationService {
             "! Login with your email and password to proceed!",
           data: {
             registrationResponse: {
-              userId: createdUser._id,
-              username: createdUser.username,
-              email: createdUser.email,
-              token
-            }
-          }
+              token,
+              otpId,
+              otpTimestamp,
+            },
+          },
         });
       } catch (error) {
         reject(error);

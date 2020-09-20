@@ -6,7 +6,7 @@ const MySchema = new Schema({
   userId: mongoose.Types.ObjectId,
   ipAddress: String,
   userAgent: String,
-  accessDate: Number
+  accessDate: Number,
 });
 
 module.exports = mongoose.model(ModelName, MySchema);
