@@ -3,7 +3,7 @@ const { statusCode, statusMessage } = require("../constants/httpStatus");
 const exceptionMessage = {
   USERNAME_PASSWORD_WRONG: "Invalid Credentials!",
   USER_ALREADY_LOGIN: "User already logged in.",
-  TOKEN_EXPIRED: "Your access token is invalid.";
+  TOKEN_EXPIRED: "Your access token is invalid."
 };
 
 const exceptionConstant = {
