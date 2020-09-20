@@ -1,5 +1,5 @@
 const { NODE_ENV } = process.env;
-
+const environmentHelpers = require("./environmentHelpers");
 function generateLogTemplate(typeOfTemplate, traceId) {
   const runtimeId = require("../appConfig").configuration.RUNTIME_ID;
   const environment = process.env.NODE_ENV;
@@ -38,21 +38,36 @@ module.exports = {
       console.log(generateLogTemplate("info", null) + message);
     },
     info(message, object, traceId) {
-      if (NODE_ENV !== "df") {
+      if (undefined !== object) {
+        console.log(generateLogTemplate("info", traceId) + message, object);
+      } else {
+        console.log(generateLogTemplate("info", traceId) + message);
+      }
+    },
+    debug(message) {
+      if (!environmentHelpers.isRunningOnProduction(NODE_ENV)) {
+        console.log(generateLogTemplate("debug", null) + message);
+      }
+    },
+    debug(message, traceId) {
+      if (!environmentHelpers.isRunningOnProduction(NODE_ENV)) {
+        console.log(generateLogTemplate("debug", traceId) + message);
+      }
+    },
+    debug(message, object, traceId) {
+      if (!environmentHelpers.isRunningOnProduction(NODE_ENV)) {
         if (undefined !== object) {
-          console.log(generateLogTemplate("info", traceId) + message, object);
+          console.log(generateLogTemplate("debug", traceId) + message, object);
         } else {
-          console.log(generateLogTemplate("info", traceId) + message);
+          console.log(generateLogTemplate("debug", traceId) + message);
         }
       }
     },
     error(message, object, traceId) {
-      if (NODE_ENV !== "df") {
-        if (undefined !== object) {
-          console.log(generateLogTemplate("error", traceId) + message, object);
-        } else {
-          console.log(generateLogTemplate("error", traceId) + message);
-        }
+      if (undefined !== object) {
+        console.log(generateLogTemplate("error", traceId) + message, object);
+      } else {
+        console.log(generateLogTemplate("error", traceId) + message);
       }
     }
   }

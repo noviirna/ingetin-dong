@@ -2,6 +2,9 @@ const User = require("../models/User");
 const { statusCode, statusMessage } = require("../constants/httpStatus");
 const { compareHash, hashObject } = require("../util/hashingUtil");
 const { encode } = require("../util/jwtUtil");
+const { log } = require("../helpers/logger");
+const { encryptAES } = require("../util/encryptionUtil");
+const { uuidv4 } = require("../util/generatorUtil");
 const exception = require("../constants/exception");
 const { TOKEN_EXPIRATION } = require("../appConfig").configuration;
 const UserManagementService = require("./UserManagement");
@@ -137,22 +140,30 @@ class RegistrationService {
   }
 
   static register(registerData) {
-    const email = registerData.email;
-    const password = hashObject(registerData.password);
-    const username = registerData.username;
+    let { registrationRequest, traceId } = registerData;
+    log.debug(
+      "in RegistrationService.register, with param ",
+      registrationRequest,
+      traceId
+    );
 
     return new Promise((resolve, reject) => {
       try {
-        const newUser = { email, password, username };
-
         // create user in db
-        let createdUser = UserManagementService.addUser(newUser);
+        let createdUser = UserManagementService.addUser(registerData);
 
         // generate activation code
         let userId = createdUser._id;
-        let otp = hashObject("");
+        let otp = hashObject(uuidv4);
 
-        var token = encode({ userId, otp });
+        let otpId = encode(otp);
+
+        var token = encode({
+          userId,
+          otpId,
+          otpTimestamp: new Date().getTime()
+        });
+
         // send email for activation code
 
         // generate jwt for activation code

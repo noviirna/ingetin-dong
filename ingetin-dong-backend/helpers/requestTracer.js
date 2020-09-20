@@ -26,7 +26,9 @@ module.exports = function(request) {
   }
 
   log.info(
-    `${request.method} "${request.url}" | timestamp: ${new Date(request.timestamp).toISOString()} | ipAddress: ${IP_ADDRESS} ${accessToken}| body: `,
+    `${request.method} "${request.url}" | timestamp: ${new Date(
+      request.timestamp
+    ).toISOString()} | ipAddress: ${IP_ADDRESS} ${accessToken}| body: `,
     request.body,
     generatedId
   );

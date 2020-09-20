@@ -23,7 +23,11 @@ class UserController {
   }
   static register(request, response, next) {
     request = processRequest(request);
-    RegistrationService.register(request.body)
+
+    RegistrationService.register({
+      traceId: request.traceId,
+      registrationRequest: { ...request.body }
+    })
       .then(registerResponse => {
         generateSuccessResponse(request, response, registerResponse);
       })
