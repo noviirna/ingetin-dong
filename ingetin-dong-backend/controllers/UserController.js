@@ -1,6 +1,6 @@
 const processRequest = require("../helpers/requestTracer");
 const { generateSuccessResponse } = require("../helpers/apiResponseGenerator");
-const UserManagement = require("../services/UserManagement");
+const RegistrationService = require("../services/RegistrationService");
 const { log } = require("../helpers/logger");
 class UserController {
   static login(request, response, next) {
@@ -23,7 +23,7 @@ class UserController {
   }
   static register(request, response, next) {
     request = processRequest(request);
-    UserManagement.register(request.body)
+    RegistrationService.register(request.body)
       .then(registerResponse => {
         generateSuccessResponse(request, response, registerResponse);
       })

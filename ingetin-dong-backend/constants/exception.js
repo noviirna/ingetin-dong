@@ -1,5 +1,12 @@
 const { statusCode, statusMessage } = require("../constants/httpStatus");
-module.exports = {
+
+const exceptionMessage = {
+  USERNAME_PASSWORD_WRONG: "Invalid Credentials!",
+  USER_ALREADY_LOGIN: "User already logged in.",
+  TOKEN_EXPIRED: "Your access token is invalid.";
+};
+
+const exceptionConstant = {
   errorName: {
     USER_NOT_EXIST: "UserIsNotExist",
     USERNAME_PASSWORD_WRONG: "UsernameOrPasswordWrong",
@@ -15,17 +22,17 @@ module.exports = {
     USERNAME_PASSWORD_WRONG: {
       code: statusCode.BAD_REQUEST,
       status: statusMessage.BAD_REQUEST,
-      message: "You are entering wrong username / password. Please Try Again."
+      message: exceptionMessage.USERNAME_PASSWORD_WRONG
     },
     USER_ALREADY_LOGIN: {
       code: statusCode.BAD_REQUEST,
       status: statusMessage.BAD_REQUEST,
-      message: "User already logged in."
+      message: exceptionMessage.USER_ALREADY_LOGIN
     },
     TOKEN_EXPIRED: {
       code: statusCode.UNAUTHORIZED,
       status: statusMessage.UNAUTHORIZED,
-      message: "Your access token is invalid."
+      message: exceptionMessage.TOKEN_EXPIRED
     },
     VALIDATION_ERROR: {
       code: statusCode.BAD_REQUEST,
@@ -36,9 +43,7 @@ module.exports = {
       status: statusMessage.INTERNAL_SERVER_ERROR
     }
   },
-  errorMessage: {
-    USERNAME_PASSWORD_WRONG:
-      "You are entering wrong username / password. Please Try Again.",
-    USER_ALREADY_LOGIN: "User already logged in."
-  }
+  errorMessage: { ...exceptionMessage }
 };
+
+module.exports = { ...exceptionConstant };

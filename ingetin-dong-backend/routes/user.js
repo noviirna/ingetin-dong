@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {
   USER_LOGIN,
   USER_REGISTER,
+  USER_REQUEST_ACTIVATE,
   USER_ACTIVATE,
   USER_LOGOUT,
   USER_DEACTIVATE,
@@ -22,8 +23,10 @@ const {
   viewProfile
 } = require("../controllers/UserController");
 
+
 router.post(USER_LOGIN, login);
 router.post(USER_REGISTER, register);
+// router.get(USER_REQUEST_ACTIVATE, activate);
 router.get(USER_ACTIVATE, activate);
 router.get(USER_LOGOUT, logout);
 router.get(USER_DEACTIVATE, deactivate);

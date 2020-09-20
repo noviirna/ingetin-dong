@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
+const { USER_STATUS } = require("../constants/user/userConstant");
 const { hashObject } = require("../util/hashingUtil");
+
 const emailValidationRegEx = /^(([^<>()\[\]\.,;:\s@"]+(\.[^<>()\[\]\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const usernameValidaitonRegEx = /^(?!.*__.*)(?!.*\.\..*)[a-z0-9_.]+$/iu;
-const UserModel = "User";
 
-const UserSchema = new Schema({
+const ModelName = "User";
+const MySchema = new Schema({
   email: {
     type: String,
     validate: [
@@ -80,12 +82,36 @@ const UserSchema = new Schema({
     ],
     required: true
   },
-  lastLogin: Number
+  status: {
+    type: String,
+    minlength: [2, "Invalid User Status"],
+    maxlength: [2, "Invalid User Status"],
+    validate: [
+      {
+        validator: function(inputtedStatus) {
+          let isValid = false;
+          for (const key in USER_STATUS) {
+            if (
+              new String(inputtedStatus).valueOf() ==
+              new String(USER_STATUS[key].value).valueOf()
+            ) {
+              isValid = true;
+            }
+          }
+          return isValid;
+        },
+        message: "Invalid User Status"
+      }
+    ],
+    required: true
+  },
+  lastLogin: Number,
+  deletedDate: Number
 });
 
-UserSchema.pre("save", function(next) {
+MySchema.pre("save", function(next) {
   this.password = hashObject(this.password);
   next();
 });
 
-module.exports = mongoose.model(UserModel, UserSchema);
+module.exports = mongoose.model(ModelName, MySchema);
